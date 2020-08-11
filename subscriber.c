@@ -1,5 +1,5 @@
-#include "mqtt_handler.h"
-#include "io.h"
+#include <subscriber.h>
+
 
 //-----------------------------------------------------------------------------------------------
 //
@@ -130,14 +130,33 @@ static void mqtt_terminate()
 
 //-----------------------------------------------------------------------------------------------
 //
-// AUFGABE
+// Unsubscribing from topics
 //
 //-----------------------------------------------------------------------------------------------
 err_t mqtt_unsubscribe(char* topic) {
-    ////////////////////////////////////////
-    // HIER DEN UNSUBSCRIBE CODE EINFÜGEN //
-    ////////////////////////////////////////
+    err_t err;
+
+    // Checking if CONNACK has been received
+    if (mqtt_han.connack && t_pcb != NULL) {
+        unsigned char buf[200];
+        int buflen = sizeof(buf);
+        int msglen;
+
+        // Initialising MQTT UNSUBSCRIBE packet
+        MQTTString topicString = MQTTString_initializer;
+        topicString.cstring = topic;
+
+        UARTprintf("Unsubscribing from %s.\n", topic);
+        msglen = MQTTSerialize_unsubscribe(buf, buflen, 0, 1, 1, &topicString);
+        mqtt_send_packet(buf, msglen);
+
+        err = 0;
+    } else return -1;
+
+    return err;
 }
+
+
 
 
 
@@ -198,6 +217,7 @@ static err_t mqtt_poll_fn(void* arg, struct tcp_pcb* tpcb) {
     }
 
     mqtt_han.poll++;
+    return ERR_OK;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -232,7 +252,6 @@ static err_t mqtt_recved_fn(void* arg, struct tcp_pcb* tpcb, struct pbuf* p, err
         case CONNACK:
             mqtt_han.connack = true;
             UARTprintf("CONNACK received\n");
-            //mqtt_subscribe("sensor/temp");
             break;
 
         case PUBLISH:
@@ -259,7 +278,7 @@ static err_t mqtt_recved_fn(void* arg, struct tcp_pcb* tpcb, struct pbuf* p, err
             UARTprintf("Topic: %s\n", mqtt_msg->topic);
             UARTprintf("Message: %s\n", mqtt_msg->message);
 
-            io_set_display(NULL, mqtt_msg->topic, mqtt_msg->message);
+
 
             if (mqtt_han.qos == 1) {
                 // For QoS == 1 we need to send a PUBACK back
@@ -333,3 +352,18 @@ static err_t mqtt_recved_fn(void* arg, struct tcp_pcb* tpcb, struct pbuf* p, err
 
     return ERR_OK;
 }
+
+err_t mqtt_publish(unsigned char *payload, int payloadlen, char *topic){
+    err_t err;
+    int len;
+    unsigned char buf[200];
+    int buflen = 200;
+    MQTTString topicString = MQTTString_initializer;
+    topicString.cstring = topic;
+    len = MQTTSerialize_publish(buf, buflen, 0, 0, 0, 0, topicString, payload, payloadlen);
+    err = mqtt_send_packet(buf, len);
+    return err;
+}
+
+
+

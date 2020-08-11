@@ -8,7 +8,7 @@
 	<isElfFormat value="true"/>
 	<rts value="libc.a"/>
 	<createSlaveProjects value=""/>
-	<origin value="F:/HTWG/6. Semester/VerteilteSysteme/Group10"/>
+	<origin value="C:/Users/Heimgartner/Desktop/SensorHub"/>
 	<isTargetManual value="true"/>
 	<connection value="common/targetdb/connections/Stellaris_ICDI_Connection.xml"/>
 </projectOptions>

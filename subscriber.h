@@ -1,5 +1,5 @@
-#ifndef MQTT_HANDLER_H_
-#define MQTT_HANDLER_H_
+#ifndef SUBSCRIBER_H_
+#define SUBSCRIBER_H_
 
 #include <stdbool.h>
 #include <string.h>
@@ -71,12 +71,15 @@ extern volatile bool g_netcon_ready;
 // Prototypes
 //
 //-----------------------------------------------------------------------------------------------
-err_t mqtt_init(uint8_t IP_0, uint8_t IP_1, uint8_t IP_2, uint8_t IP_3);
-void mqtt_disconnect();
+
 static err_t mqtt_send_packet(unsigned char* buf, uint32_t buflen);
-err_t mqtt_subscribe(char* topic);
 static void mqtt_terminate();
+
+void mqtt_disconnect();
+err_t mqtt_init(uint8_t IP_0, uint8_t IP_1, uint8_t IP_2, uint8_t IP_3);
+err_t mqtt_subscribe(char* topic);
 err_t mqtt_unsubscribe(char* topic);
+err_t mqtt_publish(unsigned char *payload, int payloadlen,char *topic);
 //-----------------------------------------------------------------------------------------------
 // Callbacks
 static err_t mqtt_connected_fn(void* arg, struct tcp_pcb* tpcb, err_t err);

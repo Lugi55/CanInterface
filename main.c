@@ -42,11 +42,11 @@
 #include "utils/ustdlib.h"
 #include "httpserver_raw/httpd.h"
 #include "drivers/pinout.h"
-#include "io.h"
 #include "cgifuncs.h"
 #include <drivers/CFAF128128B0145T.h>
+#include <subscriber.h>
 #include "settings.h"
-#include "mqtt_handler.h"
+
 
 //*****************************************************************************
 //
@@ -305,6 +305,7 @@ static char* UpdateCGIHandler(int32_t i32Index, int32_t i32NumParams, char* pcPa
 //
 //*****************************************************************************
 static char* DisconnectCGIHandler(int32_t i32Index, int32_t i32NumParams, char* pcParam[], char* pcValue[]) {
+    mqtt_disconnect();
     UARTprintf("DisconnectCGIHandler\n");
     return(DEFAULT_CGI_RESPONSE);
 }
@@ -404,7 +405,6 @@ lwIPHostTimerHandler(void)
             // Display the new IP address.
             //
             UARTprintf("IP Address: %s\n", current_ip);
-            io_set_display(current_ip, "", "");
 
             g_netcon_ready = true;
         }
@@ -550,13 +550,8 @@ main(void)
     //
     http_set_cgi_handlers(g_psConfigCGIURIs, NUM_CONFIG_CGI_URIS);
 
-    //
-    // Initialize IO controls
-    //
-    io_init(g_ui32SysClock);
-
 
     while (1) {
-        SysCtlDelay(50000000);
+
     }
 }
