@@ -1,5 +1,5 @@
-#ifndef SUBSCRIBER_H_
-#define SUBSCRIBER_H_
+#ifndef MQTTHANDLER_H_
+#define MQTTHANDLER_H_
 
 #include <stdbool.h>
 #include <string.h>
