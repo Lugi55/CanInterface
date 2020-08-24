@@ -46,6 +46,8 @@
 #include <drivers/CFAF128128B0145T.h>
 #include <mqttHandler.h>
 #include "settings.h"
+#include "sensor.h"
+
 
 
 //*****************************************************************************
@@ -296,6 +298,26 @@ static char* ConnectCGIHandler(int32_t iIndex, int32_t i32NumParams, char* pcPar
 //*****************************************************************************
 static char* UpdateCGIHandler(int32_t i32Index, int32_t i32NumParams, char* pcParam[], char* pcValue[]) {
     UARTprintf("UpdateCGIHandler\n");
+
+    long lStringParam;
+    char pcDecodedString[50];
+
+
+    lStringParam = FindCGIParameter("gpioTx", pcParam, i32NumParams);
+    if (lStringParam != -1){
+        DecodeFormString(pcValue[lStringParam], pcDecodedString, 48);
+        UARTprintf(pcDecodedString);
+    }
+    lStringParam = FindCGIParameter("gpioRx", pcParam, i32NumParams);
+    if (lStringParam != -1){
+        DecodeFormString(pcValue[lStringParam], pcDecodedString, 48);
+        UARTprintf(pcDecodedString);
+    }
+
+
+    //
+    // Tell the HTTPD server which file to send back to the client.
+    //
     return(DEFAULT_CGI_RESPONSE);
 }
 
@@ -552,6 +574,10 @@ main(void)
 
 
     while (1) {
-
+        if(mqtt_getConnack()){
+            mqtt_publish("test", 5, "test");
+            SysCtlDelay(10000);
+            UARTprintf("printTopic\n");
+        }
     }
 }

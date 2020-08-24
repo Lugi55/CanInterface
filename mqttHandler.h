@@ -74,6 +74,7 @@ extern volatile bool g_netcon_ready;
 
 static err_t mqtt_send_packet(unsigned char* buf, uint32_t buflen);
 static void mqtt_terminate();
+bool mqtt_getConnack();
 
 void mqtt_disconnect();
 err_t mqtt_init(uint8_t IP_0, uint8_t IP_1, uint8_t IP_2, uint8_t IP_3);
