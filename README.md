@@ -1,2 +1,2 @@
-## readme
-MCP2551
+## SensorHub
+MCP2562
