@@ -21,6 +21,7 @@
 // This is part of revision 2.1.4.178 of the EK-TM4C129EXL Firmware Package.
 //
 //*****************************************************************************
+#include <can.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -46,7 +47,6 @@
 #include <drivers/CFAF128128B0145T.h>
 #include <mqttHandler.h>
 #include "settings.h"
-#include "sensor.h"
 
 
 
@@ -572,12 +572,12 @@ main(void)
     //
     http_set_cgi_handlers(g_psConfigCGIURIs, NUM_CONFIG_CGI_URIS);
 
+    can_Init(g_ui32SysClock);
+
 
     while (1) {
-        if(mqtt_getConnack()){
-            mqtt_publish("test", 5, "test");
-            SysCtlDelay(10000);
-            UARTprintf("printTopic\n");
-        }
+
+        can_Write(20,1,0);
+        SysCtlDelay(10000);
     }
 }

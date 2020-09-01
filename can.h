@@ -1,7 +1,7 @@
 
 
-#ifndef SENSOR_H_
-#define SENSOR_H_
+#ifndef CAN_H_
+#define CAN_H_
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -19,12 +19,17 @@
 #include "driverlib/i2c.h"
 #include "driverlib/ssi.h"
 #include "driverlib/sysctl.h"
-
-void sensor_canInit(uint32_t ui32SysClock);
-void sensor_canDisable();
-void senosr_canEnable();
-void sensor_canWrite();
+#include "inc/hw_can.h"
+#include "inc/hw_ints.h"
+#include "driverlib/pin_map.h"
 
 
+void can_Init(uint32_t ui32SysClock);
+void can_Disable(void);
+void can_Enable(void);
+void can_Write(uint64_t ui64MsgData, uint32_t ui32MsgID, uint32_t ui32MsgIDMask);
+void CANIntHandler(void);
 
-#endif /* SENSOR_H_ */
+
+
+#endif /* CAN_H_ */
