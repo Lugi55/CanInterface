@@ -54,6 +54,8 @@
 <form class="border" method="get" action="update.cgi" name="numberform" id="formID">
 		<input type="checkbox" name="CANTX"><span id="CANTX"><b>CAN Tx</b></span>
 		<br>		
+		<input type="checkbox" name="CANRX"><span id="CANRX"><b>CAN Rx</b></span>
+		<br>	
 		<input type="checkbox" name="Voltage1"><span id="Voltage1"><b>Voltage1</b></span>
 		<br>
 		<input type="checkbox" name="Voltage2"><span id="Voltage2"><b>Voltage2</b></span>
@@ -80,6 +82,7 @@
 	var span = document.getElementsByClassName("close")[0];
 
 	let CANTX = document.getElementById("CANTX")
+	let CANRX = document.getElementById("CANRX")
 	let Voltage1 = document.getElementById("Voltage1")
 	let Voltage2 = document.getElementById("Voltage2")
 	let Voltage3 = document.getElementById("Voltage3")
@@ -87,9 +90,14 @@
 	let Temperature2 = document.getElementById("Temperature2")
 	let Temperature3 = document.getElementById("Temperature3")
 
+	CANRX.onclick = function(evt){
+		modal.style.display = "block"
+		document.getElementById("modalText").innerHTML = "CANRX infos"
+	}
+
 	CANTX.onclick = function(evt) {
 		modal.style.display = "block";
-		document.getElementById("modalText").innerHTML = "Topic: SensorHub/CAN Message: string"
+		document.getElementById("modalText").innerHTML = "CANTX infos"
 	}
 
 	Voltage1.onclick = function(evt){
