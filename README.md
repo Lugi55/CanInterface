@@ -61,6 +61,7 @@ CAN/Temperature1<br />
 CAN/Temperature2<br />
 CAN/Temperature3<br />
 
-![alt text](./images/BoosterPack2.PNG "BoosterPack2")
+### BoosterPack2
+![image](./images/BoosterPack2.PNG)
 
 
