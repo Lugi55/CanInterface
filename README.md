@@ -18,8 +18,8 @@
 |1||
 |2|CANL|
 |3||
-|4||
-|5||
+|4|E-Switch|
+|5|Charge-Switch|
 |6|GND|
 |7|CANH|
 |8||
@@ -34,15 +34,22 @@
 |4|12V|
 |5||
 |6||
-|7|E-Switch|
-|8|Charge-Switch|
+|7|Charge-Switch|
+|8|E-Switch|
+
+### DIP Schalter
+|Nummer|Funktion|
+|:---:|:----:|
+|1|120 ohm|
+|2|E-Switch|
+|3|Charge-Switch|
+|4|120 ohm|
 
 
 ### Json Tx Frame
 ```json
 {"MsgData":"number","MsgID":"number","MsgIDMask":"number"}
 ```
-
 
 ### Topics
 CAN/Tx<br />
@@ -53,5 +60,6 @@ CAN/Voltage3<br />
 CAN/Temperature1<br /> 
 CAN/Temperature2<br />
 CAN/Temperature3<br />
+
 
 
