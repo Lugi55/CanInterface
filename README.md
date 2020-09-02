@@ -45,10 +45,13 @@
 
 
 ### Topics
-CAN/TX   
-CAN/Voltage1
-CAN/Voltage2
-CAN/Voltage3
-CAN/Temperature1
-CAN/Temperature2
-CAN/Temperature3
+CAN/Tx<br />
+CAN/Rx<br />
+CAN/Voltage1<br />
+CAN/Voltage2<br />
+CAN/Voltage3<br />
+CAN/Temperature1<br /> 
+CAN/Temperature2<br />
+CAN/Temperature3<br />
+
+
