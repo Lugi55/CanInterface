@@ -210,7 +210,7 @@ static int32_t SSIHandler(int32_t iIndex, char* pcInsert, int32_t iInsertLen);
 static const tCGI g_psConfigCGIURIs[] =
 {
     { "/connect.cgi", (tCGIHandler)ConnectCGIHandler },         // CGI_CON
-    { "/update.cgi", (tCGIHandler)UpdateCGIHandler },     // CGI_SUB
+    { "/update.cgi", (tCGIHandler)UpdateCGIHandler },           // CGI_SUB
     { "/disconnect.cgi", (tCGIHandler)DisconnectCGIHandler },   // CGI_TERM
 };
 
@@ -267,6 +267,7 @@ volatile bool g_netcon_ready;
 
 struct Mqtt_message mqtt_message = { {0}, {0}, 0 };
 
+
 //*****************************************************************************
 //
 // The error routine that is called if the driver library encounters an error.
@@ -285,7 +286,7 @@ __error__(char* pcFilename, uint32_t ui32Line)
 //
 //*****************************************************************************
 static char* ConnectCGIHandler(int32_t iIndex, int32_t i32NumParams, char* pcParam[], char* pcValue[]) {
-    mqtt_init(192,168,0,101);
+    mqtt_init(192,168,0,100);
     UARTprintf("ConnectCGIHandler\n");
     return(DEFAULT_CGI_RESPONSE);
 }
@@ -304,11 +305,6 @@ static char* UpdateCGIHandler(int32_t i32Index, int32_t i32NumParams, char* pcPa
 
 
     lStringParam = FindCGIParameter("gpioTx", pcParam, i32NumParams);
-    if (lStringParam != -1){
-        DecodeFormString(pcValue[lStringParam], pcDecodedString, 48);
-        UARTprintf(pcDecodedString);
-    }
-    lStringParam = FindCGIParameter("gpioRx", pcParam, i32NumParams);
     if (lStringParam != -1){
         DecodeFormString(pcValue[lStringParam], pcDecodedString, 48);
         UARTprintf(pcDecodedString);
@@ -571,13 +567,14 @@ main(void)
     // Pass our CGI handlers to the HTTP server.
     //
     http_set_cgi_handlers(g_psConfigCGIURIs, NUM_CONFIG_CGI_URIS);
-
     can_Init(g_ui32SysClock);
 
 
     while (1) {
 
-        can_Write(20,1,0);
-        SysCtlDelay(10000);
+        //UARTprintf("message send\n");
+        //SysCtlDelay(100000000);
+        //mqtt_publish("asdf",5,"CAN");
+
     }
 }

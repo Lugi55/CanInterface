@@ -22,13 +22,26 @@
 #include "inc/hw_can.h"
 #include "inc/hw_ints.h"
 #include "driverlib/pin_map.h"
+#include "stdbool.h"
+#include "mqttHandler.h"
 
+
+typedef struct{
+    bool Rx;
+    bool Temp1;
+    bool Temp2;
+    bool Temp3;
+}topic_t;
+
+
+static void can_phraser(void);
+static void can_PrettyPrint(void);
 
 void can_Init(uint32_t ui32SysClock);
-void can_Disable(void);
-void can_Enable(void);
-void can_Write(uint64_t ui64MsgData, uint32_t ui32MsgID, uint32_t ui32MsgIDMask);
-void CANIntHandler(void);
+void can_IntHandler(void);
+void can_Receive(void);
+
+
 
 
 

@@ -17,7 +17,7 @@ static char *password = NULL;
 #define BROKER_IP_0         192
 #define BROKER_IP_1         168
 #define BROKER_IP_2         0
-#define BROKER_IP_3         101
+#define BROKER_IP_3         100
 
 //-----------------------------------------------------------------------------------------------
 //
