@@ -286,7 +286,9 @@ __error__(char* pcFilename, uint32_t ui32Line)
 //
 //*****************************************************************************
 static char* ConnectCGIHandler(int32_t iIndex, int32_t i32NumParams, char* pcParam[], char* pcValue[]) {
-    mqtt_init(192,168,0,100);
+    if(mqtt_init(192,168,0,100)==ERR_OK){
+        can_Enable();
+    }
     UARTprintf("ConnectCGIHandler\n");
     return(DEFAULT_CGI_RESPONSE);
 }
@@ -567,14 +569,17 @@ main(void)
     // Pass our CGI handlers to the HTTP server.
     //
     http_set_cgi_handlers(g_psConfigCGIURIs, NUM_CONFIG_CGI_URIS);
+
+
+
     can_Init(g_ui32SysClock);
+    can_Enable();
+    tCANMsgObject sCANMessage;
 
 
     while (1) {
-
-        //UARTprintf("message send\n");
-        //SysCtlDelay(100000000);
-        //mqtt_publish("asdf",5,"CAN");
-
+        if(can_FifoPop(&sCANMessage)==FIFO_SUCCESS){
+            can_PrettyPrint(sCANMessage);
+        }
     }
 }
