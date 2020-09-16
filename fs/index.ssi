@@ -1,145 +1,250 @@
 
 <!DOCTYPE html>
 <html>
-<head>
-	<meta charset="UTF-8">
-	<title>SensorHub</title>
-</head>
-<body>
-
-<link href="design.css" rel="stylesheet">
-
-
-<div id="myModal" class="modal">
-  <div class="modal-content">
-    <span class="close">&times;</span>
-    <p id="modalText">Some text in the Modal..</p>
-  </div>
-</div>
-
-<div>
-	<h1>SensorHub</h1>
-</div>
-<pre id="json"></pre>
-
-
-
-<form class="border"  method="get" action="connect.cgi" name="numberform" id="formID2">
-	<div>
-		<b>Brocker IP </b>
-		<input required pattern="^([0-9]{1,3}\.){3}[0-9]{1,3}$" name="ip">
-	</div>
-	<br>
-	<div>
-		<input type="submit" value="connect to brocker">
-	</div>
-</form>
-<br>
-
-
-<div class="border">
-	<form method="get" action="disconnect.cgi" name="numberform" id="fromID4" style="display: inline;">
+	<head>
+		<meta charset="UTF-8">
+		<title>SensorHub</title>
+	</head>
+	<body>
+		<link href="design.css" rel="stylesheet">
 		<div>
-			<b>Connected to:</b> <!--#IP-->
+			<h1>SensorHub</h1>
+		</div>
+
+		<div class="border">
+			<form method="get" action="connect.cgi" name="numberform" id="formID2" style="display: inline;">
+				<b>Brocker IP </b>
+				<input required pattern="^([0-9]{1,3}\.){3}[0-9]{1,3}$" name="ip">
+				<br>
+				<br>
+				<input type="submit" value="connect to brocker">
+			</form>
+			<form method="get" action="disconnect.cgi" name="numberform" id="fromID5" style="display: inline;">
+					<input type="submit" value="disconnect from brocker">
+			</form>
 		</div>
 		<br>
-			<input type="submit" value="disconnect from brocker">
-	</form>
-	<button onClick="window.location.reload();">refresh</button>
-</div>
-<br>
 
-
-
-<form class="border" method="get" action="update.cgi" name="numberform" id="formID">
-		<input type="checkbox" name="CANTX"><span id="CANTX"><b>CAN Tx</b></span>
-		<br>		
-		<input type="checkbox" name="CANRX"><span id="CANRX"><b>CAN Rx</b></span>
-		<br>	
-		<input type="checkbox" name="Voltage1"><span id="Voltage1"><b>Voltage1</b></span>
+		<div class="border">
+			<form method="get" action="enable.cgi" name="numberform" id="fromID5" style="display: inline;">
+					<input type="submit" value="enable Can">
+			</form>
+			<form method="get" action="disable.cgi" name="numberform" id="fromID5" style="display: inline;">
+					<input type="submit" value="disable Can">
+			</form>
+		</div>
 		<br>
-		<input type="checkbox" name="Voltage2"><span id="Voltage2"><b>Voltage2</b></span>
-		<br>
-		<input type="checkbox" name="Voltage3"><span id="Voltage3"><b>Voltage3</b></span>
-		<br>
-		<input type="checkbox" name="Temperature1"><span id="Temperature1"><b>Temperature1</b></span>
-		<br>
-		<input type="checkbox" name="Temperature2"><span id="Temperature2"><b>Temperature2</b></span>
-		<br>
-		<input type="checkbox" name="Temperature3"><span id="Temperature3"><b>Temperature3</b></span>
-		<br>
-	</div>
-	<br>
-	<div>
-		<input type="submit" value="submit">
-	</div>
-</form>
-<br>
 
 
-<script> 
-	var modal = document.getElementById("myModal");
-	var span = document.getElementsByClassName("close")[0];
 
-	let CANTX = document.getElementById("CANTX")
-	let CANRX = document.getElementById("CANRX")
-	let Voltage1 = document.getElementById("Voltage1")
-	let Voltage2 = document.getElementById("Voltage2")
-	let Voltage3 = document.getElementById("Voltage3")
-	let Temperature1 = document.getElementById("Temperature1")
-	let Temperature2 = document.getElementById("Temperature2")
-	let Temperature3 = document.getElementById("Temperature3")
+		<form class="border" method="get" action="update.cgi" name="numberform" id="formID">
+				<input type="checkbox" name="CANRX"><span><b>CAN Rx</b></span>
+				<br>	
+				<span>&#9492	CAN/RX</span>
+				<br>
+				<br>
 
-	CANRX.onclick = function(evt){
-		modal.style.display = "block"
-		document.getElementById("modalText").innerHTML = "CANRX infos"
-	}
+				<input type="checkbox" name="0x1E3_Frame"><span><b>0x1E3 Frame</b></span>
+				<br>
+				<span>&#9500	CAN/AEC/State</span>
+				<br>
+				<span>&#9500	CAN/AEC/SoC</span>
+				<br>
+				<span>&#9500	CAN/AEC/Errors</span>
+				<br>
+				<span>&#9500	CAN/AEC/Warnings</span>
+				<br>
+				<span>&#9500	CAN/AEC/Error_from_Node_ID</span>
+				<br>
+				<span>&#9492	CAN/AEC/Voltage</span>
+				<br>
+				<br>
 
-	CANTX.onclick = function(evt) {
-		modal.style.display = "block";
-		document.getElementById("modalText").innerHTML = "CANTX infos"
-	}
+				<input type="checkbox" name="0x2E3_Frame"><span><b>0x2E3 Frame</b></span>
+				<br>
+				<span>&#9500	CAN/AEC/System_Maximum_String_Cell_Voltage</span>
+				<br>
+				<span>&#9500	CAN/AEC/System_Minimum_String_Cell_Voltage</span>
+				<br>
+				<span>&#9500	CAN/AEC/Systerm</span>
+				<br>
+				<span>&#9500	CAN/AEC/SoH</span>
+				<br>
+				<span>&#9500	CAN/AEC/Hottest_Module_Temperature</span>
+				<br>
+				<span>&#9500	CAN/AEC/Coldest_Module_Temperature</span>
+				<br>
+				<span>&#9500	CAN/AEC/SW_Version</span>
+				<br>
+				<span>&#9492	CAN/AEC/Relays_Status</span>
+				<br>
+				<br>
 
-	Voltage1.onclick = function(evt){
-		modal.style.display = "block"
-		document.getElementById("modalText").innerHTML = "Voltage infos"
-	}
+				<input type="checkbox" name="0x3E3_Frame"><span><b>0x3E3 Frame</b></span>
+				<br>
+				<span>&#9500	CAN/AEC/Remaining_Capacity</span>
+				<br>
+				<span>&#9500	CAN/AEC/Time_Remaining</span>
+				<br>
+				<span>&#9500	CAN/AEC/Lifetime_Charged_kWh</span>
+				<br>
+				<span>&#9492	CAN/AEC/ISO_Monitor</span>
+				<br>
+				<br>
 
-	Voltage2.onclick = function(evt){
-		modal.style.display = "block"
-		document.getElementById("modalText").innerHTML = "Voltage infos"
-	}
+				<input type="checkbox" name="0x4E3_Frame"><span><b>0x4E3 Frame</b></span>
+				<br>
+				<span>&#9500	CAN/AEC/Permitted_Charge_Current</span>
+				<br>		
+				<span>&#9500	CAN/AEC/Permitted_Discharge_Current</span>
+				<br>
+				<span>&#9500	CAN/AEC/Alive_Counter</span>
+				<br>
+				<span>&#9492	CAN/AEC/Current</span>
+				<br>
+				<br>
+
+				<input type="checkbox" name="MMS_Module_1" class="Node1"><span><b>MMS Module 1</b></span>
+				<br>
+				<span>&#9500	CAN/Module1/Maximum_String_Cells_Voltage</span>
+				<br>
+				<span>&#9500	CAN/Module1/Minimum_String_Cells_Voltage</span>
+				<br>
+				<span>&#9500	CAN/Module1/Errors</span>
+				<br>
+				<span">&#9500	CAN/Module1/Heater_Status</span>
+				<br>
+				<span>&#9500	CAN/Module1/Maximum_Module_Temperature</span>
+				<br>
+				<span>&#9500	CAN/Module1/Minimum_Module_Temperature</span>
+				<br>
+				<span>&#9492	CAN/Module1/Voltage</span>
+				<br>
+				<br>
 
 
-	Voltage3.onclick = function(evt){
-		modal.style.display = "block"
-		document.getElementById("modalText").innerHTML = "Voltage infos"
-	}
+				<input type="checkbox" name="MMS_Module_2" class="Node2"><span><b>MMS Module 2</b></span>
+				<br>
+				<span>&#9500	CAN/Module2/Maximum_String_Cells_Voltage</span>
+				<br>
+				<span>&#9500	CAN/Module2/Minimum_String_Cells_Voltage</span>
+				<br>
+				<span>&#9500	CAN/Module2/Errors</span>
+				<br>
+				<span">&#9500	CAN/Module2/Heater_Status</span>
+				<br>
+				<span>&#9500	CAN/Module2/Maximum_Module_Temperature</span>
+				<br>
+				<span>&#9500	CAN/Module2/Minimum_Module_Temperature</span>
+				<br>
+				<span>&#9492	CAN/Module2/Voltage</span>
+				<br>
+				<br>
 
 
-	Temperature1.onclick = function(evt){
-		modal.style.display = "block"
-		document.getElementById("modalText").innerHTML = "Voltage infos"
-	}
-
-	Temperature2.onclick = function(evt){
-		modal.style.display = "block"
-		document.getElementById("modalText").innerHTML = "Voltage infos"
-	}
-
-	Temperature3.onclick = function(evt){
-		modal.style.display = "block"
-		document.getElementById("modalText").innerHTML = "Voltage infos"
-	}
-
-	span.onclick = function() {
-		modal.style.display = "none";
-	}
-
-
-</script>
+				<input type="checkbox" name="MMS_Module_3" class="Node3"><span><b>MMS Module 3</b></span>
+				<br>
+				<span>&#9500	CAN/Module3/Maximum_String_Cells_Voltage</span>
+				<br>
+				<span>&#9500	CAN/Module3/Minimum_String_Cells_Voltage</span>
+				<br>
+				<span>&#9500	CAN/Module3/Errors</span>
+				<br>
+				<span">&#9500	CAN/Module3/Heater_Status</span>
+				<br>
+				<span>&#9500	CAN/Module3/Maximum_Module_Temperature</span>
+				<br>
+				<span>&#9500	CAN/Module3/Minimum_Module_Temperature</span>
+				<br>
+				<span>&#9492	CAN/Module3/Voltage</span>
+				<br>
+				<br>
 
 
-</body>
+				<input type="checkbox" name="MMS_Module_4" class="Node4"><span><b>MMS Module 4</b></span>
+				<br>
+				<span>&#9500	CAN/Module4/Maximum_String_Cells_Voltage</span>
+				<br>
+				<span>&#9500	CAN/Module4/Minimum_String_Cells_Voltage</span>
+				<br>
+				<span>&#9500	CAN/Module4/Errors</span>
+				<br>
+				<span">&#9500	CAN/Module4/Heater_Status</span>
+				<br>
+				<span>&#9500	CAN/Module4/Maximum_Module_Temperature</span>
+				<br>
+				<span>&#9500	CAN/Module4/Minimum_Module_Temperature</span>
+				<br>
+				<span>&#9492	CAN/Module4/Voltage</span>
+				<br>
+				<br>
+
+				<input type="checkbox" name="MMS_Module_5" class="Node5"><span><b>MMS Module 5</b></span>
+				<br>
+				<span>&#9500	CAN/Module5/Maximum_String_Cells_Voltage</span>
+				<br>
+				<span>&#9500	CAN/Module5/Minimum_String_Cells_Voltage</span>
+				<br>
+				<span>&#9500	CAN/Module5/Errors</span>
+				<br>
+				<span">&#9500	CAN/Module5/Heater_Status</span>
+				<br>
+				<span>&#9500	CAN/Module5/Maximum_Module_Temperature</span>
+				<br>
+				<span>&#9500	CAN/Module5/Minimum_Module_Temperature</span>
+				<br>
+				<span>&#9492	CAN/Module5/Voltage</span>
+				<br>
+				<br>
+
+			<input type="checkbox" name="MMS_Module_6" class="Node6"><span><b>MMS Module 6</b></span>
+				<br>
+				<span>&#9500	CAN/Module6/Maximum_String_Cells_Voltage</span>
+				<br>
+				<span>&#9500	CAN/Module6/Minimum_String_Cells_Voltage</span>
+				<br>
+				<span>&#9500	CAN/Module6/Errors</span>
+				<br>
+				<span">&#9500	CAN/Module6/Heater_Status</span>
+				<br>
+				<span>&#9500	CAN/Module6/Maximum_Module_Temperature</span>
+				<br>
+				<span>&#9500	CAN/Module6/Minimum_Module_Temperature</span>
+				<br>
+				<span>&#9492	CAN/Module6/Voltage</span>
+				<br>
+				<br>
+
+				<input type="checkbox" name="MMS_Module_7" class="Node7"><span><b>MMS Module 7</b></span>
+				<br>
+				<span>&#9500	CAN/Module7/Maximum_String_Cells_Voltage</span>
+				<br>
+				<span>&#9500	CAN/Module7/Minimum_String_Cells_Voltage</span>
+				<br>
+				<span>&#9500	CAN/Module7/Errors</span>
+				<br>
+				<span>&#9500	CAN/Module7/Heater_Status</span>
+				<br>
+				<span>&#9500	CAN/Module7/Maximum_Module_Temperature</span>
+				<br>
+				<span>&#9500	CAN/Module7/Minimum_Module_Temperature</span>
+				<br>
+				<span>&#9492	CAN/Module7/Voltage</span>
+				<br>
+			</div>
+			<br>
+			<div>
+				<input type="submit" value="submit">
+				<input type="reset" value="reset">
+			</div>
+		</form>
+
+
+
+		<script> 
+
+
+		</script>
+	</body>
 </html>
 

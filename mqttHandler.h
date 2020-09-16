@@ -44,7 +44,7 @@ struct tcp_pcb* t_pcb;
 struct Mqtt_handler {
     int qos;
     int poll;
-    bool connack;
+    volatile bool connack;
 };
 
 struct Mqtt_subscribe {

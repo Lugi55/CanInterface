@@ -21,7 +21,7 @@
 // This is part of revision 2.1.4.178 of the EK-TM4C129EXL Firmware Package.
 //
 //*****************************************************************************
-#include <can.h>
+
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -44,9 +44,10 @@
 #include "httpserver_raw/httpd.h"
 #include "drivers/pinout.h"
 #include "cgifuncs.h"
-#include <drivers/CFAF128128B0145T.h>
-#include <mqttHandler.h>
+#include "mqttHandler.h"
 #include "settings.h"
+#include "can.h"
+#include "parser.h"
 
 
 
@@ -189,7 +190,10 @@ static char* UpdateCGIHandler(int32_t iIndex, int32_t i32NumParams,
     char* pcParam[], char* pcValue[]);
 static char* DisconnectCGIHandler(int32_t iIndex, int32_t i32NumParams,
     char* pcParam[], char* pcValue[]);
-
+static char* EnableCGIHandler(int32_t iIndex, int32_t i32NumParams,
+    char* pcParam[], char* pcValue[]);
+static char* DisableCGIHandler(int32_t iIndex, int32_t i32NumParams,
+    char* pcParam[], char* pcValue[]);
 //*****************************************************************************
 //
 // Prototype for the main handler used to process server-side-includes for the
@@ -209,9 +213,11 @@ static int32_t SSIHandler(int32_t iIndex, char* pcInsert, int32_t iInsertLen);
 //*****************************************************************************
 static const tCGI g_psConfigCGIURIs[] =
 {
-    { "/connect.cgi", (tCGIHandler)ConnectCGIHandler },         // CGI_CON
-    { "/update.cgi", (tCGIHandler)UpdateCGIHandler },           // CGI_SUB
-    { "/disconnect.cgi", (tCGIHandler)DisconnectCGIHandler },   // CGI_TERM
+    { "/connect.cgi", (tCGIHandler)ConnectCGIHandler },
+    { "/update.cgi", (tCGIHandler)UpdateCGIHandler },
+    { "/disconnect.cgi", (tCGIHandler)DisconnectCGIHandler },
+    { "/enable.cgi", (tCGIHandler)EnableCGIHandler },
+    { "/disable.cgi", (tCGIHandler)DisableCGIHandler }
 };
 
 //*****************************************************************************
@@ -280,17 +286,98 @@ __error__(char* pcFilename, uint32_t ui32Line)
 }
 #endif
 
+
+//*****************************************************************************
+//
+// Convert string IP to unsigned int
+//
+//*****************************************************************************
+unsigned int ip_to_int (const char * ip)
+{
+    /* The return value. */
+    unsigned v = 0;
+    /* The count of the number of bytes processed. */
+    int i;
+    /* A pointer to the next digit to process. */
+    const char * start;
+
+    start = ip;
+    for (i = 0; i < 4; i++) {
+        /* The digit being processed. */
+        char c;
+        /* The value of this byte. */
+        int n = 0;
+        while (1) {
+            c = * start;
+            start++;
+            if (c >= '0' && c <= '9') {
+                n *= 10;
+                n += c - '0';
+            }
+            /* We insist on stopping at "." if we are still parsing
+               the first, second, or third numbers. If we have reached
+               the end of the numbers, we will allow any character. */
+            else if ((i < 3 && c == '.') || i == 3) {
+                break;
+            }
+            else {
+                return 0;
+            }
+        }
+        if (n >= 256) {
+            return 0;
+        }
+        v *= 256;
+        v += n;
+    }
+    return v;
+}
+
 //*****************************************************************************
 //
 // This CGI handler is called whenever the web browser requests connect.cgi.
 //
 //*****************************************************************************
 static char* ConnectCGIHandler(int32_t iIndex, int32_t i32NumParams, char* pcParam[], char* pcValue[]) {
-    if(mqtt_init(192,168,0,100)==ERR_OK){
-        can_Enable();
+
+    long lStringParam;
+    char pcDecodedString[50];
+    unsigned int brockerIP;
+
+    lStringParam = FindCGIParameter("ip", pcParam, i32NumParams);
+    if (lStringParam != -1){
+        DecodeFormString(pcValue[lStringParam], pcDecodedString, 48);
+        brockerIP = ip_to_int(pcDecodedString);
+        UARTprintf("Brocker IP:%d.%d.%d.%d\n", (brockerIP >> 24) & 0xff, (brockerIP >> 16) & 0xff, (brockerIP >> 8) & 0xff, brockerIP & 0xff);
     }
+
+    if(mqtt_init((brockerIP >> 24) & 0xff,(brockerIP >> 16) & 0xff,(brockerIP >> 8) & 0xff,brockerIP & 0xff)!=ERR_OK){
+        UARTprintf("error: mqtt init");
+    }
+
+
     UARTprintf("ConnectCGIHandler\n");
     return(DEFAULT_CGI_RESPONSE);
+}
+
+//*****************************************************************************
+//
+// This CGI handler is called whenever the web browser requests enable.cgi.
+//
+//*****************************************************************************
+static char*  EnableCGIHandler(int32_t iIndex, int32_t i32NumParams, char* pcParam[], char* pcValue[]){
+    can_Enable();
+    return(DEFAULT_CGI_RESPONSE);
+}
+
+//*****************************************************************************
+//
+// This CGI handler is called whenever the web browser requests disables.cgi.
+//
+//*****************************************************************************
+static char*  DisableCGIHandler(int32_t iIndex, int32_t i32NumParams, char* pcParam[], char* pcValue[]){
+     can_Disable();
+     return(DEFAULT_CGI_RESPONSE);
 }
 
 
@@ -302,20 +389,97 @@ static char* ConnectCGIHandler(int32_t iIndex, int32_t i32NumParams, char* pcPar
 static char* UpdateCGIHandler(int32_t i32Index, int32_t i32NumParams, char* pcParam[], char* pcValue[]) {
     UARTprintf("UpdateCGIHandler\n");
 
+    sFrames_t myFrames = {false,false,false,false,false,false,false,false,false,false,false,false};
+
     long lStringParam;
     char pcDecodedString[50];
 
-
-    lStringParam = FindCGIParameter("gpioTx", pcParam, i32NumParams);
+    lStringParam = FindCGIParameter("CANRX", pcParam, i32NumParams);
     if (lStringParam != -1){
         DecodeFormString(pcValue[lStringParam], pcDecodedString, 48);
-        UARTprintf(pcDecodedString);
+        myFrames.CANRX = true;
+    }else{
+        myFrames.CANRX = false;
+    }
+    lStringParam = FindCGIParameter("0x1E3_Frame", pcParam, i32NumParams);
+    if (lStringParam != -1){
+        DecodeFormString(pcValue[lStringParam], pcDecodedString, 48);
+        myFrames._0x1E3_Frame = true;
+    }else{
+        myFrames._0x1E3_Frame = false;
+    }
+    lStringParam = FindCGIParameter("0x2E3_Frame", pcParam, i32NumParams);
+    if (lStringParam != -1){
+        DecodeFormString(pcValue[lStringParam], pcDecodedString, 48);
+        myFrames._0x2E3_Frame = true;
+    }else{
+        myFrames._0x2E3_Frame = false;
+    }
+    lStringParam = FindCGIParameter("0x3E3_Frame", pcParam, i32NumParams);
+    if (lStringParam != -1){
+        DecodeFormString(pcValue[lStringParam], pcDecodedString, 48);
+        myFrames._0x3E3_Frame = true;
+    }else{
+        myFrames._0x3E3_Frame = false;
+    }
+    lStringParam = FindCGIParameter("0x4E3_Frame", pcParam, i32NumParams);
+    if (lStringParam != -1){
+        DecodeFormString(pcValue[lStringParam], pcDecodedString, 48);
+        myFrames._0x4E3_Frame = true;
+    }else{
+        myFrames._0x4E3_Frame = false;
+    }
+    lStringParam = FindCGIParameter("MMS_Module_1", pcParam, i32NumParams);
+    if (lStringParam != -1){
+        DecodeFormString(pcValue[lStringParam], pcDecodedString, 48);
+        myFrames._MMS_Module_1 = true;
+    }else{
+        myFrames._MMS_Module_1 = false;
+    }
+    lStringParam = FindCGIParameter("MMS_Module_2", pcParam, i32NumParams);
+    if (lStringParam != -1){
+        DecodeFormString(pcValue[lStringParam], pcDecodedString, 48);
+        myFrames._MMS_Module_2 = true;
+    }else{
+        myFrames._MMS_Module_2 = false;
+    }
+    lStringParam = FindCGIParameter("MMS_Module_3", pcParam, i32NumParams);
+    if (lStringParam != -1){
+        DecodeFormString(pcValue[lStringParam], pcDecodedString, 48);
+        myFrames._MMS_Module_3 = true;
+    }else{
+        myFrames._MMS_Module_3 = false;
+    }
+    lStringParam = FindCGIParameter("MMS_Module_4", pcParam, i32NumParams);
+    if (lStringParam != -1){
+        DecodeFormString(pcValue[lStringParam], pcDecodedString, 48);
+        myFrames._MMS_Module_4 = true;
+    }else{
+        myFrames._MMS_Module_4 = false;
+    }
+    lStringParam = FindCGIParameter("MMS_Module_5", pcParam, i32NumParams);
+    if (lStringParam != -1){
+        DecodeFormString(pcValue[lStringParam], pcDecodedString, 48);
+        myFrames._MMS_Module_5 = true;
+    }else{
+        myFrames._MMS_Module_5 = false;
+    }
+    lStringParam = FindCGIParameter("MMS_Module_6", pcParam, i32NumParams);
+    if (lStringParam != -1){
+        DecodeFormString(pcValue[lStringParam], pcDecodedString, 48);
+        myFrames._MMS_Module_6 = true;
+    }else{
+        myFrames._MMS_Module_6 = false;
+    }
+    lStringParam = FindCGIParameter("MMS_Module_7", pcParam, i32NumParams);
+    if (lStringParam != -1){
+        DecodeFormString(pcValue[lStringParam], pcDecodedString, 48);
+        myFrames._MMS_Module_7 = true;
+    }else{
+        myFrames._MMS_Module_7 = false;
     }
 
-
-    //
-    // Tell the HTTPD server which file to send back to the client.
-    //
+    parser_setFrames(myFrames);
     return(DEFAULT_CGI_RESPONSE);
 }
 
@@ -570,16 +734,17 @@ main(void)
     //
     http_set_cgi_handlers(g_psConfigCGIURIs, NUM_CONFIG_CGI_URIS);
 
-
+    parser_Init();
 
     can_Init(g_ui32SysClock);
-    can_Enable();
     tCANMsgObject sCANMessage;
+
 
 
     while (1) {
         if(can_FifoPop(&sCANMessage)==FIFO_SUCCESS){
-            can_PrettyPrint(sCANMessage);
+            //can_PrettyPrint(sCANMessage);
+            parser_parseCanMsg(sCANMessage);
         }
     }
 }

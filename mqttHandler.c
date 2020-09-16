@@ -7,7 +7,7 @@
 //
 //-----------------------------------------------------------------------------------------------
 struct Mqtt_message* mqtt_msg;
-struct Mqtt_handler mqtt_han = { 0, 0, false };
+struct  Mqtt_handler mqtt_han = { 0, 0, false };
 struct Mqtt_subscribe mqtt_sub = { 0, {0}, 0 };
 
 //-----------------------------------------------------------------------------------------------

@@ -25,6 +25,7 @@
 #include <stdint.h>
 #include "inc/hw_nvic.h"
 #include "inc/hw_types.h"
+#include "can.h"
 
 //*****************************************************************************
 //
@@ -252,8 +253,11 @@ FaultISR(void)
     //
     // Enter an infinite loop.
     //
+    UARTprintf("FaultISR\n");
+    can_SetLedRed(true);
     while(1)
     {
+
     }
 }
 

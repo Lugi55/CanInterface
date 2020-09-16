@@ -1,14 +1,15 @@
 
 #include <can.h>
+#include "driverlib/rom_map.h"
+
+#define CAN_INT_PRIORITY    0x90
 
 //////////////////////
 //Modul variables
 //////////////////////
 uint8_t pui8MsgData[8];
 tCANMsgObject sCANMessage;
-sTopic_t myTopic = {.Rx=false,.Temp1=false,.Temp2=false,.Temp3=false};
 sFifo_t myFifo = {.read=0,.write=0};
-char stingBuffer[100];
 volatile bool g_bRXFlag = 0;
 volatile bool g_bErrFlag = 0;
 
@@ -37,6 +38,7 @@ void can_Init(uint32_t ui32SysClock){
     sCANMessage.pui8MsgData = pui8MsgData;
     CANMessageSet(CAN0_BASE, 1, &sCANMessage, MSG_OBJ_TYPE_RX);
     UARTprintf("canInit\n");
+    MAP_IntPrioritySet(INT_CAN0,CAN_INT_PRIORITY);
 }
 
 //////////////////////
@@ -75,16 +77,6 @@ void can_PrettyPrint(tCANMsgObject sCANMessage){
 }
 
 
-//////////////////////
-//decode CAN MSG
-//////////////////////
-void canPhraser(tCANMsgObject sCANMessage){
-    if(myTopic.Rx){
-        //sprintf(buffer,"{\"ID\":\"0x%08X\", \"len\":%u, \"data\":\"0x %02X %02X %02X %02X %02X %02X %02X %02X\"}",
-        //       sCANMessage.ui32MsgID, sCANMessage.ui32MsgLen, pui8MsgData[7], pui8MsgData[6], pui8MsgData[5], pui8MsgData[4], pui8MsgData[3], pui8MsgData[2], pui8MsgData[1], pui8MsgData[0]);
-        //mqtt_publish(buffer,strlen(buffer),"CAN/Rx");
-    }
-}
 
 //////////////////////
 //enable CAN

@@ -30,17 +30,13 @@
 #define BUFFER_SUCCESS  1
 #define BUFFER_SIZE     32
 
+
 typedef enum {
     FIFO_FAIL,
     FIFO_SUCCESS
 }eFifoStatus_t;
 
-typedef struct{
-    bool Rx;
-    bool Temp1;
-    bool Temp2;
-    bool Temp3;
-}sTopic_t;
+
 
 typedef struct{
   tCANMsgObject sCANMessage[BUFFER_SIZE];
@@ -49,14 +45,9 @@ typedef struct{
 }sFifo_t;
 
 
-
-
-
-
 //Global Methods
 void can_IntHandler(void);
 void can_Init(uint32_t ui32SysClock);
-void can_Phraser(tCANMsgObject sCANMessage);
 void can_PrettyPrint(tCANMsgObject sCANMessage);
 eFifoStatus_t can_FifoPush(tCANMsgObject sCANMessage);
 eFifoStatus_t can_FifoPop(tCANMsgObject *sCANMessage);
@@ -65,8 +56,6 @@ void can_SetLedGreen1(bool s);
 void can_SetLedGreen2(bool s);
 void can_Enable(void);
 void can_Disable(void);
-
-
 
 
 
